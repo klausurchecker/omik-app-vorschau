@@ -49,6 +49,12 @@
   --premium:#1C1F24; --premium-2:#23262C; --premium-line:rgba(201,204,212,.28); --premium-ink:#EAEBED; --premium-ink2:#9DA2AA;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+/* ===== KAUF-FARBE (KANON 1.1): navy = kostet Geld ===== */
+:root{--kauf:#102444;--kauf-2:#1D3B6E}
+[data-theme="dark"]{--kauf:#6E9BE0;--kauf-2:#8FB4E8}
+.btn-kauf{background:var(--kauf);color:#FFFFFF;border-color:transparent;box-shadow:var(--sh-2)}
+.btn-kauf:active{transform:translateY(1px)}
+[data-theme="dark"] .btn-kauf{color:#0B1220}
 html{-webkit-text-size-adjust:100%}
 body{background:var(--bg-2);color:var(--text);font-family:var(--sans);line-height:1.55;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
 .app{max-width:var(--app);margin:0 auto;min-height:100vh;background:var(--bg);position:relative;box-shadow:var(--sh-3);display:flex;flex-direction:column}
@@ -919,7 +925,7 @@ window.BKBC = (function(){
   <div class="pathwrap" id="pathwrap"></div>
 
   <div style="margin-top:20px" id="pfadCtaWrap" hidden>
-    <button class="btn btn-primary btn-block" id="pfadCta">Alle 10 Kapitel freischalten <svg class="i arrow"><use href="#i-arrow"/></svg></button>
+    <button class="btn btn-kauf btn-block" id="pfadCta">Alle 10 Kapitel freischalten <svg class="i arrow"><use href="#i-arrow"/></svg></button>
   </div>
 </section>
 
@@ -973,7 +979,7 @@ window.BKBC = (function(){
     <span class="pill gratis"><span class="dot"></span> aktiv</span>
   </div>
   <div id="accBuyWrap">
-    <button class="btn btn-silver btn-block" style="margin:4px 0 2px" id="accBuy">Preise ansehen &rsaquo;</button>
+    <button class="btn btn-kauf btn-block" style="margin:4px 0 2px" id="accBuy">Preise ansehen &rsaquo;</button>
   </div>
 
   <div class="sec-lbl">Meine Kurse</div>
