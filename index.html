@@ -640,6 +640,9 @@ body:not([data-screen="hub"]) .tb-in{justify-content:flex-end}
 .bkbc-hint{font-size:12px;color:var(--text-2);text-align:center;margin-top:8px;min-height:1px}
 .bkbc-note{font-size:11.5px;color:var(--text-3);line-height:1.45;margin:10px 2px 0;text-align:center}
 </style>
+<!-- Klausurtermine kommen zentral von der Landingpage. Ohne diese Datei
+     zeigt die App neutrale Texte statt Daten - nichts bricht. -->
+<script src="https://www.klausurchecker.de/termine.js"></script>
 <script id="bkbc-core">
 /* =====================================================================
    BKBC · Faecher-Paket-Konfigurator (Mehrfachauswahl + Auto-Summe)
@@ -850,7 +853,7 @@ window.BKBC = (function(){
   <div class="scr-h">
     <span class="eyebrow"><span id="hubHi">Willkommen</span></span>
     <h1 id="hubTitle">Dein Weg zur OMIK&#8209;Klausur.</h1>
-    <p id="hubSub">Klausur bei Prof. Blonski am 22.07.2026. Ein Kapitel nach dem anderen.</p>
+    <p id="hubSub">Ein Kapitel nach dem anderen.</p>
   </div>
 
   <div class="gcard">
@@ -2820,7 +2823,10 @@ window.BKBC = (function(){
   /* ================= KONFIG ================= */
   var ZUGANG = "probe";
   var VORMERK_URL = "{{VORMERK_ENDPOINT}}"; /* VPS-Endpoint: nimmt Vormerkung an, verschickt Mail via Brevo */                    /* "probe" | "komplett" · Komplett-Build: auf "komplett" setzen ({{LIZENZ_TOKEN}}) */
-  var KLAUSUR = "2026-07-22", FRIST = "2026-07-21";
+  /* Termin und Frist kommen aus termine.js - kein zweites Datum hier. */
+  var ZT = (window.BWLK_TERMINE && window.BWLK_TERMINE.appTexte)
+             ? window.BWLK_TERMINE.appTexte("omik") : null;
+  var KLAUSUR = ZT && ZT.klausurTag, FRIST = KLAUSUR;
   var QP = {};
   try { QP = Object.fromEntries(new URLSearchParams(location.search)); } catch(e){}
   if (QP.zugang === "komplett" || QP.zugang === "probe") ZUGANG = QP.zugang;
@@ -2892,6 +2898,16 @@ window.BKBC = (function(){
     return Math.max(0, Math.round((a-b)/86400000));
   }
   (function(){
+    /* Ohne Termin zaehlte daysTo() auf 0 herunter und die App behauptete
+       "0 Tage bis Klausur". Jetzt steht dort, woran man wirklich ist. */
+    if(!KLAUSUR){
+      var w = ZT ? ZT.zaehlerWert : "-", l = ZT ? ZT.zaehlerLabel : "Termin folgt", e;
+      if((e = $("cd")))       e.textContent = w;
+      if((e = $("cdBig")))    e.textContent = w;
+      if((e = $("cdBigLbl"))) e.textContent = l;
+      if((e = $("cd4")))      e.textContent = w;
+      return;
+    }
     var dk = daysTo(KLAUSUR), df = daysTo(FRIST);
     var cd = $("cd");   if(cd)   cd.textContent   = dk + (dk===1?" Tag":" Tage");
     var b  = $("cdBig");if(b)    b.textContent    = dk;
@@ -2955,7 +2971,7 @@ window.BKBC = (function(){
     $("hubQuote").textContent = LEITSAETZE[day % LEITSAETZE.length];
     if(dc===10){
       $("hubTitle").innerHTML = "Alle Kapitel geschafft.";
-      $("hubSub").textContent = "Stark. Bis zur Klausur am 22.07. kannst du gezielt wiederholen.";
+      $("hubSub").textContent = "Stark. " + (ZT ? ZT.hubSub : "Du kannst jetzt gezielt wiederholen.");
       $("hubProgSub").textContent = "Alles erledigt. Wiederhol deine wackligen Themen.";
       $("hubCta").innerHTML = "Zum Wiederholen <svg class='i arrow'><use href='#i-arrow'/></svg>";
       $("hubCta").onclick = function(){ show("wiederholen"); };
